@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Simple User Front</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 30px;
+    }
+    input, button {
+      margin: 5px 0;
+      padding: 8px;
+    }
+    button {
+      cursor: pointer;
+    }
+    .user {
+      border: 1px solid #ccc;
+      padding: 8px;
+      margin: 5px 0;
+    }
+  </style>
+</head>
+<body>
+
+  <h2>Add User</h2>
+
+  <input id="name" placeholder="Name" /><br />
+  <input id="age" type="number" placeholder="Age" /><br />
+  <button onclick="createUser()">Save</button>
+
+  <h2>Users list</h2>
+  <button onclick="loadUsers()">Refresh</button>
+
+  <div id="users"></div>
+
+  <script>
+    const API = 'http://localhost:3000/users';
+
+    async function createUser() {
+      const name = document.getElementById('name').value;
+      const age = Number(document.getElementById('age').value);
+
+      const res = await fetch(API, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, age }),
+      });
+
+      if (!res.ok) {
+        alert('Error creating user');
+        return;
+      }
+
+      document.getElementById('name').value = '';
+      document.getElementById('age').value = '';
+      loadUsers();
+    }
+
+    async function loadUsers() {
+      const res = await fetch(API);
+      const data = await res.json();
+
+      const usersDiv = document.getElementById('users');
+      usersDiv.innerHTML = '';
+
+      data.forEach(u => {
+        const div = document.createElement('div');
+        div.className = 'user';
+        div.innerText = `ID: ${u.id} | ${u.name} (${u.age})`;
+        usersDiv.appendChild(div);
+      });
+    }
+
+    loadUsers();
+  </script>
+
+</body>
+</html>
