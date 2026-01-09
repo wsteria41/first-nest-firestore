@@ -6,10 +6,12 @@ export class FirebaseService {
   public db: FirebaseFirestore.Firestore;
 
   constructor() {
+    const serviceAccount = JSON.parse(
+      process.env.FIREBASE_SERVICE_ACCOUNT as string,
+    );
+
     admin.initializeApp({
-      credential: admin.credential.cert(
-        require('../../serviceAccountKey.json'),
-      ),
+      credential: admin.credential.cert(serviceAccount),
     });
 
     this.db = admin.firestore();
